@@ -1,9 +1,18 @@
 from django.shortcuts import render
+from products.models import ProductsCategory, Product
 
 
 def index(request):
-    return render(request, 'products/index.html')
+    context = {
+        'title': 'Geekshop',
+    }
+    return render(request, 'products/index.html', context)
 
 
 def products(request):
-    return render(request, 'products/products.html')
+    context = {
+        'title': 'Geekshop - каталог',
+        'products': Product.objects.all(),
+        'categories': ProductsCategory.objects.all(),
+    }
+    return render(request, 'products/products.html', context)
