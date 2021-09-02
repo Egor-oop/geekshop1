@@ -28,7 +28,19 @@ def login(request):
     return render(request, 'users/login.html', context)
 
 def registration(request):
+    if request.method == 'POST':
+        form = UserLoginForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('users:login'))
+        else:
+            print(form.errors)
+    else:
+        form = UserLoginForm()
+
+    form = UserLoginForm()
     context = {
-        'title': 'Geekshop - Регистрация'
+        'title': 'Geekshop - Регистрация',
+        'form': form
     }
     return render(request, 'users/register.html', context)
