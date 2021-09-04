@@ -18,12 +18,12 @@ def login(request):
     else:
         form = UserLoginForm()
 
-    form = UserLoginForm()
     context = {
         'title': 'Geekshop - Авторизация',
         'form': form
     }
     return render(request, 'users/login.html', context)
+
 
 def registration(request):
     if request.method == 'POST':
@@ -34,7 +34,6 @@ def registration(request):
     else:
         form = UserRegistrationForm()
 
-    form = UserRegistrationForm()
     context = {
         'title': 'Geekshop - Регистрация',
         'form': form
