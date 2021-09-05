@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.contrib import auth
 from django.contrib import messages
 
+from baskets.models import Basket
+
 from users.froms import UserLoginForm, UserRegistrationForm, UserProfileForm
 
 
@@ -38,22 +40,25 @@ def registration(request):
 
     context = {
         'title': 'Geekshop - Регистрация',
-        'form': form
+        'form': form,
+        'baskets': Basket.objects.all(),
     }
     return render(request, 'users/register.html', context)
 
 
 def profile(request):
+    user = request.user
     if request.method == 'POST':
-        form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
+        form = UserProfileForm(instance=user, files=request.FILES, data=request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('users:profile'))
     else:
-        form = UserProfileForm(instance=request.user)
+        form = UserProfileForm(instance=user)
     context = {
         'title': 'Geekshop - Личный кабинет',
-        'form': form
+        'form': form,
+        'baskets': Basket.objects.filter(user=user),
     }
     return render(request, 'users/profile.html', context)
 
