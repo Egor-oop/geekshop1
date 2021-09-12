@@ -42,7 +42,6 @@ def registration(request):
     context = {
         'title': 'Geekshop - Регистрация',
         'form': form,
-        'baskets': Basket.objects.all(),
     }
     return render(request, 'users/register.html', context)
 
