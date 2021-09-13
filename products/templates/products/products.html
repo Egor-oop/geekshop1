@@ -6,7 +6,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Page Content -->
 <div class="container">
 
 
@@ -16,11 +15,9 @@
 
             <h1 class="my-4">GeekShop</h1>
             <div class="list-group">
-                <a href="#" class="list-group-item">Новинки</a>
-                <a href="#" class="list-group-item">Одежда</a>
-                <a href="#" class="list-group-item">Обувь</a>
-                <a href="#" class="list-group-item">Аксессуары</a>
-                <a href="#" class="list-group-item">Подарки</a>
+                <a href="{% url 'products:category' category_id %}">
+                    {{ category.name }}
+                </a>
             </div>
 
         </div>
