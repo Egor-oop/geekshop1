@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import auth
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from baskets.models import Basket
 
@@ -46,6 +47,7 @@ def registration(request):
     return render(request, 'users/register.html', context)
 
 
+@login_required()
 def profile(request):
     user = request.user
     if request.method == 'POST':
@@ -55,6 +57,7 @@ def profile(request):
             return HttpResponseRedirect(reverse('users:profile'))
     else:
         form = UserProfileForm(instance=user)
+
     context = {
         'title': 'Geekshop - Личный кабинет',
         'form': form,
