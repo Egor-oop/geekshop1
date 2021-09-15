@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
@@ -26,6 +27,11 @@ class UserListView(ListView):
         return context
 
 
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserListView, self).dispatch(self, request, *args, **kwargs)
+
+
 class UserCreateView(CreateView):
     model = User
     template_name = 'admins/admin-users-create.html'
@@ -36,6 +42,10 @@ class UserCreateView(CreateView):
         context = super(UserCreateView, self).get_context_data(**kwargs)
         context['title'] = 'Geekshop - Админ | создание пользователя'
         return context
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserCreateView, self).dispatch(self, request, *args, **kwargs)
 
 
 class UserUpdateView(UpdateView):
@@ -49,6 +59,10 @@ class UserUpdateView(UpdateView):
         context['title'] = 'Geekshop - Админ | редактрирование пользователя'
         return context
 
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserUpdateView, self).dispatch(self, request, *args, **kwargs)
+
 
 class UserDeleteView(DeleteView):
     model = User
@@ -59,3 +73,7 @@ class UserDeleteView(DeleteView):
         self.object = self.get_object()
         self.object.safe_delete()
         return HttpResponseRedirect(self.get_success_url())
+
+    @method_decorator(user_passes_test(lambda u: u.is_staff))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserDeleteView, self).dispatch(self, request, *args, **kwargs)
