@@ -4,6 +4,9 @@ from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from django.db import transaction
+from users.froms import UserProfileEditForm
+
 from django.core.mail import send_mail
 from django.conf import settings
 from users.models import User
@@ -77,16 +80,19 @@ def profile(request):
     user = request.user
     if request.method == 'POST':
         form = UserProfileForm(instance=user, files=request.FILES, data=request.POST)
-        if form.is_valid():
+        profile_form = UserProfileEditForm(data=request.POST, instance=request.user.userprofile)
+        if form.is_valid() and profile_form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('users:profile'))
     else:
+        profile_form = UserProfileEditForm(instance=request.user.userprofile)
         form = UserProfileForm(instance=user)
 
     context = {
         'title': 'Geekshop - Личный кабинет',
         'form': form,
         'baskets': Basket.objects.filter(user=user),
+        'profile_form': profile_form
     }
     return render(request, 'users/profile.html', context)
 
@@ -94,3 +100,11 @@ def profile(request):
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
+
+
+# @transaction.atomic
+# def edit(request):
+#     if request.method == 'POST':
+#         edit_form = (request.POST, request.FILES,
+#                                         instance=request.user)
+#         profile_form =

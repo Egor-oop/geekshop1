@@ -1,5 +1,6 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django import forms
+from .models import UserProfile
 
 import random
 import hashlib
@@ -32,6 +33,7 @@ class UserRegistrationForm(UserCreationForm):
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Подтвердите пароль'}))
     age = forms.IntegerField(widget=forms.NumberInput(), required=False)
+    # attrs={'class': 'form-control py-4', 'placeholder': 'Возраст'})
 
     class Meta:
         model = User
@@ -58,3 +60,14 @@ class UserProfileForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'image', 'username', 'email')
+
+
+class UserProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ('tagline', 'about_me', 'gender')
+
+    def __init__(self, *args, **kwargs):
+        super(UserProfileEditForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
