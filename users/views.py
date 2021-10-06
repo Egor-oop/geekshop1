@@ -4,7 +4,6 @@ from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from django.db import transaction
 from users.froms import UserProfileEditForm
 
 from django.core.mail import send_mail
@@ -100,11 +99,3 @@ def profile(request):
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
-
-
-# @transaction.atomic
-# def edit(request):
-#     if request.method == 'POST':
-#         edit_form = (request.POST, request.FILES,
-#                                         instance=request.user)
-#         profile_form =
