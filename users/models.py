@@ -36,5 +36,6 @@ class UserProfile(models.Model):
     gender = models.CharField(verbose_name='пол', choices=GENDER_CHOICES, blank=True, max_length=5)
 
     @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        instance.userprofile.save()
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)

@@ -32,8 +32,6 @@ class UserRegistrationForm(UserCreationForm):
         'class': 'form-control py-4', 'placeholder': 'Введите пароль'}))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Подтвердите пароль'}))
-    age = forms.IntegerField(widget=forms.NumberInput(), required=False)
-    # attrs={'class': 'form-control py-4', 'placeholder': 'Возраст'})
 
     class Meta:
         model = User
@@ -56,10 +54,11 @@ class UserProfileForm(UserChangeForm):
     image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input'}), required=False)
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4', 'readonly': True}))
     email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control py-4', 'readonly': True}))
+    age = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control py-4'}), required=False)
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'image', 'username', 'email')
+        fields = ('first_name', 'last_name', 'image', 'username', 'email', 'age')
 
 
 class UserProfileEditForm(forms.ModelForm):
@@ -70,4 +69,4 @@ class UserProfileEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(UserProfileEditForm, self).__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['class'] = 'form-control py-4'
