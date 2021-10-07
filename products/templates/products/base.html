@@ -33,9 +33,24 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'users:profile' %}">{{ user.username }}
-                            <i class="fas fa-user-circle"></i>
-                        </a>
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle" href="" data-toggle="dropdown">
+                                {{ user.username }}
+                                <i class="fas fa-user-circle"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="nav-link text-dark" href="{% url 'users:profile' %}">
+                                        Профиль
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link text-dark" href="#">
+                                        Заказы
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'admins:index' %}">
@@ -43,7 +58,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'users:logout' %}">Выйти <i class="fas fa-sign-out-alt"></i></a>
+                        <a class="nav-link" href="{% url 'users:logout' %}">Выйти <i
+                                class="fas fa-sign-out-alt"></i></a>
                     </li>
                 {% else %}
                     <li class="nav-item">
