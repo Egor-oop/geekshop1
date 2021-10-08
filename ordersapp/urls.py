@@ -16,4 +16,3 @@ urlpatterns = [
     path('delete/<pk>/', ordersapp.OrderDelete.as_view(),
             name='order_delete'),
 ]
-]
