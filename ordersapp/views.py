@@ -18,6 +18,10 @@ class OrderList(ListView):
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(OrderList, self).get_context_data(**kwargs)
+        context['title'] = 'Заказы'
+
 
 class OrderItemsCreate(CreateView):
     model = Order
@@ -26,7 +30,7 @@ class OrderItemsCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(OrderItemsCreate, self).get_context_data(**kwargs)
-        context['title'] = 'GeekShop - Обновление заказ'
+        context['title'] = 'GeekShop - Создание заказа'
         OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
 
         if self.request.POST:
@@ -36,6 +40,16 @@ class OrderItemsCreate(CreateView):
             for form in formset:
                 if form.instance.pk:
                     form.initial['price'] = form.instance.product.price
+
+        if self.request.POST:
+            form = OrderFormSet(self.request.POST)
+        else:
+            basket_items = Basket.objects.filter(user=self.request.user)
+            if basket_items:
+                for num, form in enumerate(formset):
+                    form.initial['product'] = basket_items[num].product
+                    form.initial['quantity'] = basket_items[num].quantity
+                    form.initial['price'] = basket_items[num].price
         context['orderitems'] = formset
         return context
 
@@ -77,7 +91,7 @@ class OrderItemsUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(OrderItemsUpdate, self).get_context_data(**kwargs)
-        context['title'] = 'Geekshop | Новый заказ'
+        context['title'] = 'Geekshop | Изменение заказа'
         OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
         if self.request.POST:
             formset = OrderFormSet(self.request.POST, instance=self.object)
@@ -85,6 +99,15 @@ class OrderItemsUpdate(UpdateView):
             formset = OrderFormSet(self.request.POST, instance=self.object)
 
         context['orderitems'] = formset
+        if self.request.POST:
+            context['orderitems'] = OrderFormSet(self.request.POST,
+                                              instance=self.object)
+        else:
+            formset = OrderFormSet(instance=self.object)
+            for form in formset.forms:
+                if form.instance.pk:
+                    form.initial['price'] = form.instance.product.price
+            context['orderitems'] = formset
         return context
 
     def form_valid(self, form):
