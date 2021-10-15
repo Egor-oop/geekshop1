@@ -11,16 +11,15 @@ from baskets.models import Basket
 from ordersapp.models import Order, OrderItem
 from ordersapp.forms import OrderItemForm
 
+from django.dispatch import receiver
+from django.db.models.signals import pre_save, pre_delete
+
 
 class OrderList(ListView):
     model = Order
 
     def get_queryset(self):
         return Order.objects.filter(user=self.request.user)
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super(OrderList, self).get_context_data(**kwargs)
-        context['title'] = 'Заказы'
 
 
 class OrderItemsCreate(CreateView):
@@ -101,7 +100,7 @@ class OrderItemsUpdate(UpdateView):
         context['orderitems'] = formset
         if self.request.POST:
             context['orderitems'] = OrderFormSet(self.request.POST,
-                                              instance=self.object)
+                                                 instance=self.object)
         else:
             formset = OrderFormSet(instance=self.object)
             for form in formset.forms:
@@ -130,3 +129,22 @@ class OrderItemsUpdate(UpdateView):
 class OrderDelete(DeleteView):
     model = Order
     success_url = reverse_lazy('order:orders_list')
+
+
+@receiver(pre_save, sender=OrderItem)
+@receiver(pre_save, sender=Basket)
+def product_quantity_update_save(sender, update_fields, instance, **kwargs):
+    if update_fields == 'quantity' or 'product':
+        if instance.pk:
+            instance.product.quantity -= instance.quantity - \
+                                         sender.get_item(instance.pk).quantity
+        else:
+            instance.product.quantity -= instance.quantity
+        instance.product.save()
+
+
+@receiver(pre_delete, sender=OrderItem)
+@receiver(pre_delete, sender=Basket)
+def product_quantity_update_delete(sender, instance, **kwargs):
+    instance.product.quantity += instance.quantity
+    instance.product.save()
