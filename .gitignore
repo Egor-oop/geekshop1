@@ -1,5 +1,4 @@
 .idea
 db.sqlite3
-venv
 tmp
 media
