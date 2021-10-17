@@ -43,6 +43,11 @@
                                 </div>
                             </form>
                         </div>
+                        <button class="btn btn-round form-control">
+                            <a href="{% url 'social:begin' 'vk-oauth2' %}?next=/">
+                                Вход через ВКонтакте
+                            </a>
+                        </button>
                         <div class="card-footer text-center">
                             <div class="small"><a href="{% url 'users:registration' %}">Нужен аккаунт?
                                 Зарегистрируйся!</a></div>

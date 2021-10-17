@@ -4,6 +4,8 @@ from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+from users.froms import UserProfileEditForm
+
 from django.core.mail import send_mail
 from django.conf import settings
 from users.models import User
@@ -28,7 +30,7 @@ def verify(request, email, activation_key):
             user.activation_key_expires = None
             user.is_active = True
             user.save()
-            auth.login(request, user)
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return render(request, 'users/verification.html')
     except Exception as e:
         return HttpResponseRedirect(reverse('index'))
@@ -72,24 +74,46 @@ def registration(request):
     return render(request, 'users/register.html', context)
 
 
-@login_required()
+# @login_required()
+# def profile(request):
+#     user = request.user
+#     if request.method == 'POST':
+#         form = UserProfileForm(instance=user, files=request.FILES, data=request.POST)
+#         profile_form = UserProfileEditForm(data=request.POST, instance=request.user.userprofile)
+#         if form.is_valid() and profile_form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('users:profile'))
+#     else:
+#         profile_form = UserProfileEditForm(instance=request.user.userprofile)
+#         form = UserProfileForm(instance=user)
+#
+#     context = {
+#         'title': 'Geekshop - Личный кабинет',
+#         'form': form,
+#         'baskets': Basket.objects.filter(user=user),
+#         'profile_form': profile_form
+#     }
+#     return render(request, 'users/profile.html', context)
+
+@login_required
 def profile(request):
-    user = request.user
     if request.method == 'POST':
-        form = UserProfileForm(instance=user, files=request.FILES, data=request.POST)
-        if form.is_valid():
+        form = UserProfileForm(data=request.POST, instance=request.user, files=request.FILES)
+        profile_form = UserProfileEditForm(data=request.POST,instance=request.user.userprofile)
+        if form.is_valid() and profile_form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('users:profile'))
-    else:
-        form = UserProfileForm(instance=user)
 
+    else:
+        form = UserProfileForm(instance=request.user)
+        profile_form = UserProfileEditForm(instance=request.user.userprofile)
     context = {
-        'title': 'Geekshop - Личный кабинет',
+        'title': 'GeekShop - Профиле',
         'form': form,
-        'baskets': Basket.objects.filter(user=user),
+        'baskets': Basket.objects.filter(user=request.user),
+        'profile_form':profile_form
     }
     return render(request, 'users/profile.html', context)
-
 
 def logout(request):
     auth.logout(request)
